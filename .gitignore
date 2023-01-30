@@ -1,6 +1,10 @@
-settings_local.py
-__pycache__/
+venv
 db.sqlite3
+.vscode
+__pycache__
+*.pyc
 .DS_Store
-venv/
-media/
+images
+media
+local_settings.py
+.env
