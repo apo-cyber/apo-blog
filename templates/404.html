@@ -1,5 +1,29 @@
-<div class="error_content">
-  <h1>Page not found（404）</h1>
-  <p>The requested URL /page_not_found was not found on this server. </p>
-  <p><a href="/">トップページに戻る</a></p>
-</div>
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<style>
+  body {
+    width: 100%;
+    height: 100vh;
+    background-image: url({% static 'assets/img/404.png' %});
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  a {
+    text-decoration:none;
+    text-align: center;
+    padding-top: 25px;
+    color: rgb(214, 122, 127);
+  }
+  div {
+    text-align: center;
+    padding-top: 25px;
+  }
+</style>
+<body>
+  <div>
+    <h1><a href="/">トップページに戻る</a></h1>
+  </div>
+</body>
+</html>

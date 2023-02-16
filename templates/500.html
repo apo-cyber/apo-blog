@@ -1,5 +1,24 @@
-<div class="error_content">
-  <h1>Server Error（500）</h1>
-  <p>Sorry something went wrong.</p>
-  <p><a href="/">トップページに戻る</a></p>
-</div>
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<style>
+  body {
+    width: 100%;
+    background-image: url({% static 'assets/img/500.png' %});
+    background-size: cover;
+  }
+  a {
+    text-decoration:none;
+    color: rgb(214, 122, 127);
+  }
+  div {
+    text-align: center;
+    padding-top: 25px;
+  }
+</style>
+<body>
+  <div>
+   <h1><a href="/">トップページに戻る</a></h1>
+  </div>
+</body>
+</html>

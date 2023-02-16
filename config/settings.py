@@ -12,13 +12,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from django.contrib.messages import constants
 from pathlib import Path
 import environ
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '.env'))
+env.read_env(str(BASE_DIR / '.env'))
+
+SECRET_KEY = env('SECRET_KEY')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definition
 
@@ -69,26 +71,16 @@ DEBUG = False
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT"),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': env("DB_NAME"),
-            'USER': env("DB_USER"),
-            'PASSWORD': env("DB_PASSWORD"),
-            'HOST': env("DB_HOST"),
-            'PORT': env("DB_PORT"),
-        }
-    }
-
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -128,6 +120,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [ BASE_DIR / 'blog/static', ]
 STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -139,26 +132,3 @@ MESSAGE_TAGS = {
 }
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass
-
-# ローカル用設定
-if DEBUG:
-    ALLOWED_HOSTS = []
-    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    SECRET_KEY = env('SECRET_KEY')
-    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
-    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    # EMAIL_HOST = 'smtp.gmail.com'
-    # EMAIL_PORT = 587
-    # EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    # EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-    # EMAIL_USE_TLS = True
