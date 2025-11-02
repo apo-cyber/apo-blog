@@ -2,13 +2,13 @@
 {% load static %}
 {% block title %}Apo Blog{% endblock %}
 {% block header %}
-<header class="masthead" style="background-image: url({% static 'assets/img/turugi.jpg' %})">
+<header class="masthead" style="background-image: url('{% static "assets/img/turugi.jpg" %}');">
   <div class="container position-relative px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="post-heading">
           <h1>{{object.title}}</h1>
-          <h2 class="subheading">{{object.content|truncatechars:30}}</h2>
+        <h2 class="subheading">{{object.content|truncatechars:30}}</h2>
           <span class="meta">
             <a href={% url 'blog:index' %}>Apo Blog</a>
             {{object.posted_at}}に投稿／カテゴリ:{{object.category}}
@@ -25,7 +25,14 @@
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <a href={% url 'blog:good' object.pk %}><i class="far fa-thumbs-up"></i>{{object.good}}件</a>
+        <a href="{% url 'blog:toggle_like' object.pk %}">
+          {% if request.session.liked and object.pk in request.session.liked %}
+            <i class="fas fa-heart text-danger"></i>
+          {% else %}
+            <i class="far fa-heart"></i>
+          {% endif %}
+          {{ object.good }}件
+        </a>
         <hr>
         <div class="card" width=700px>
           <img src="{{ object.image1.url }}" class="card-card-header" style="object-fit:cover; height:400px;" alt="">

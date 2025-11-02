@@ -12,5 +12,5 @@ urlpatterns = [
     path('flower_list/', views.FlowerView.as_view(), name='flower_list'),
     path('cat-list/', views.CatView.as_view(), name='cat_list'),
     path('dailylife-list/', views.DailylifeView.as_view(), name='dailylife_list'),
-    path('good/<int:pk>', views.goodfunc, name='good'),
+    path('good/<int:pk>', views.toggle_like, name='toggle_like'),
 ]

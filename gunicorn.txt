@@ -1,0 +1,122 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=apouser
+Group=www-data
+WorkingDirectory=/home/apouser/apo-blog
+ExecStart=/home/apouser/apo-blog/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+chatgpt
+
+[Unit]
+Description=gunicorn daemon for Django
+After=network.target
+
+[Service]
+User=apouser
+Group=www-data
+WorkingDirectory=/home/apouser/apo-blog
+ExecStart=/home/apouser/apo-blog/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+
+✅ ① Nginx サイト設定ファイルの作成
+server {
+    listen 80;
+    server_name 45.77.183.252;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /home/apouser/apo-blog;
+    }
+
+    location /media/ {
+        root /home/apouser/apo-blog;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+✅ ② サイトを有効化
+sudo ln -s /etc/nginx/sites-available/apo-blog /etc/nginx/sites-enabled/
+
+nano .env
+SECRET_KEY="(m8^cxxywnh4j&wobwftv9b$o!4(#roa=8mz*erpbs+%1pa^"
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost,45.77.183.252,apo-cyber.com,www.apo-cyber.com
+
+DB_NAME=apoblog
+DB_USER=apobloguser
+DB_PASSWORD=apo1129
+DB_HOST=127.0.0.1
+DB_PORT=5432
+
+sudo systemctl restart gunicorn
+
+sudo nano /etc/nginx/sites-available/apo-blog
+server {
+    listen 80;
+    server_name apo-cyber.com www.apo-cyber.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /home/apouser/apo-blog;
+    }
+
+    location /media/ {
+        root /home/apouser/apo-blog;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+この画面は、Certbot（や他の apt install 系の操作）を実行した後に表示されるもので、
+
+「古いライブラリを使用しているデーモン（サービス）を再起動しますか？」
+
+という意味の確認ダイアログです。
+
+⸻
+
+✅ どうすればいい？
+
+このまま 何も選ばずに Tab キーで <Ok> に移動し、Enter を押せばOK です。
+
+理由：
+	•	この一覧のサービス（dbus, getty, systemd-logindなど）はNginxやGunicornとは無関係
+	•	すぐ再起動しても問題なし
+	•	Certbot のインストールには直接関係ないステップ
+
+
+✅ ステップ①：Certbot をインストール
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+✅ ステップ②：Let’s Encrypt 証明書を発行し、自動的にNginxに適用
+sudo certbot --nginx -d apo-cyber.com -d www.apo-cyber.com

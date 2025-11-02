@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView
 from .models import BlogPost
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpRequest
 
 
 class IndexView(ListView):
@@ -52,8 +53,17 @@ class DailylifeView(ListView):
     paginate_by = 2
 
 
-def goodfunc(request, pk):
-    object = get_object_or_404(BlogPost, pk=pk)
-    object.good += 1
-    object.save()
-    return redirect('blog:index')
+def toggle_like(request: HttpRequest, pk: int):
+    post = get_object_or_404(BlogPost, pk=pk)
+    liked = request.session.get('liked', [])
+
+    if pk in liked:
+        post.good = max(0, post.good - 1)
+        liked.remove(pk)
+    else:
+        post.good += 1
+        liked.append(pk)
+
+    post.save()
+    request.session['liked'] = liked
+    return redirect(request.META.get('HTTP_REFERER', 'index'))
