@@ -25,28 +25,53 @@
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <a href="{% url 'blog:toggle_like' object.pk %}">
-          {% if request.session.liked and object.pk in request.session.liked %}
-            <i class="fas fa-heart text-danger"></i>
+        <a href="#" id="like-btn" data-url="{% url 'blog:toggle_like' object.pk %}">
+          {% if object.good > 0 %}
+            <i class="fas fa-heart text-danger" id="like-icon"></i>
           {% else %}
-            <i class="far fa-heart"></i>
+            <i class="far fa-heart" id="like-icon"></i>
           {% endif %}
-          {{ object.good }}件
+          <span id="like-count">{{ object.good }}</span>件
         </a>
         <hr>
         <div class="card" width=700px>
-          <img src="{{ object.image1.url }}" class="card-card-header" style="object-fit:cover; height:400px;" alt="">
+          <img src="{{ object.image1.url }}" class="card-img-top" style="width:100%; height:auto;" alt="">
           <div class="card-body">
             <h5 class="card-title">{{ object.title }}</h5>
             <p class="card-text">{{object.content}}</p>
             <p class='text-end'>{{ object.posted_at | date:"Y年m月d日" }}</p>
           </div>
           {% if object.image2 %}
-            <img src="{{ object.image2.url }}" class="card-card-footer" style="object-fit:cover; height:400px;" alt="">
+            <img src="{{ object.image2.url }}" class="card-img-bottom" style="width:100%; height:auto;" alt="">
           {% endif %}
         </div>
       </div>
     </div>
   </div>
 </article>
+
+<script>
+document.getElementById('like-btn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const url = this.dataset.url;
+
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('like-count').textContent = data.good;
+    const icon = document.getElementById('like-icon');
+    icon.classList.remove('fas', 'far', 'text-danger');
+    if (data.good > 0) {
+      icon.classList.add('fas', 'fa-heart', 'text-danger');
+    } else {
+      icon.classList.add('far', 'fa-heart');
+    }
+  });
+});
+</script>
 {% endblock %}

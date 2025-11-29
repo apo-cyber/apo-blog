@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from django.contrib.messages import constants
 from pathlib import Path
 import environ
+from pillow_heif import register_heif_opener
+
+# HEICフォーマットのサポートを有効化
+register_heif_opener()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

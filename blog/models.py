@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+from PIL import Image
+from io import BytesIO
+import os
 
 
 class BlogPost(models.Model):
@@ -20,3 +24,22 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+
+    def _convert_to_jpg(self, image_field):
+        if not image_field:
+            return
+        ext = os.path.splitext(image_field.name)[1].lower()
+        if ext in ['.heic', '.heif']:
+            img = Image.open(image_field)
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            output = BytesIO()
+            img.save(output, format='JPEG', quality=85)
+            output.seek(0)
+            new_name = os.path.splitext(image_field.name)[0] + '.jpg'
+            image_field.save(new_name, ContentFile(output.read()), save=False)
+
+    def save(self, *args, **kwargs):
+        self._convert_to_jpg(self.image1)
+        self._convert_to_jpg(self.image2)
+        super().save(*args, **kwargs)

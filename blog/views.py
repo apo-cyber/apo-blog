@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView
 from .models import BlogPost
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 
 
 class IndexView(ListView):
@@ -60,10 +60,17 @@ def toggle_like(request: HttpRequest, pk: int):
     if pk in liked:
         post.good = max(0, post.good - 1)
         liked.remove(pk)
+        is_liked = False
     else:
         post.good += 1
         liked.append(pk)
+        is_liked = True
 
     post.save()
     request.session['liked'] = liked
+
+    # AJAXリクエストの場合はJSONで返す
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'good': post.good, 'is_liked': is_liked})
+
     return redirect(request.META.get('HTTP_REFERER', 'index'))
