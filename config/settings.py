@@ -75,23 +75,26 @@ DEBUG = env.bool("DEBUG", default=False)
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': env("DB_NAME"),
-#         'USER': env("DB_USER"),
-#         'PASSWORD': env("DB_PASSWORD"),
-#         'HOST': env("DB_HOST"),
-#         'PORT': env("DB_PORT"),
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    # ローカル環境: SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # 本番環境: PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env("DB_NAME"),
+            'USER': env("DB_USER"),
+            'PASSWORD': env("DB_PASSWORD"),
+            'HOST': env("DB_HOST"),
+            'PORT': env("DB_PORT"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
