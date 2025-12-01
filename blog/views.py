@@ -10,7 +10,7 @@ class IndexView(ListView):
     model = BlogPost
     context_object_name = 'orderby_records'
     queryset = BlogPost.objects.order_by('-posted_at')
-    paginate_by = 4
+    paginate_by = 10
 
 
 class BlogDetail(DetailView):
@@ -24,7 +24,7 @@ class MountainView(ListView):
     context_object_name = 'mountain_records'
     queryset = BlogPost.objects.filter(
         category='Mountain').order_by('-posted_at')
-    paginate_by = 2
+    paginate_by = 10
 
 
 class FlowerView(ListView):
@@ -33,7 +33,7 @@ class FlowerView(ListView):
     context_object_name = 'flower_records'
     queryset = BlogPost.objects.filter(
         category='Flower').order_by('-posted_at')
-    paginate_by = 2
+    paginate_by = 10
 
 
 class CatView(ListView):
@@ -41,7 +41,7 @@ class CatView(ListView):
     model = BlogPost
     context_object_name = 'cat_records'
     queryset = BlogPost.objects.filter(category='Cat').order_by('-posted_at')
-    paginate_by = 2
+    paginate_by = 10
 
 
 class DailylifeView(ListView):
@@ -50,7 +50,7 @@ class DailylifeView(ListView):
     context_object_name = 'dailylife_records'
     queryset = BlogPost.objects.filter(
         category='Dailylife').order_by('-posted_at')
-    paginate_by = 2
+    paginate_by = 10
 
 
 def toggle_like(request: HttpRequest, pk: int):
